@@ -1,5 +1,6 @@
 package com.example.coffeeservice.services;
 
+import com.example.coffeeservice.dto.IngredientRequest;
 import com.example.coffeeservice.entities.DrinkEntity;
 import com.example.coffeeservice.entities.IngredientEntity;
 import com.example.coffeeservice.entities.RecipeEntity;
@@ -39,6 +40,19 @@ public class CoffeeService {
 
       ingredient.setQuantity(ingredient.getQuantity() - recipe.getAmount());
       ingredientRepository.save(ingredient);
+    }
+  }
+
+  public void addIngredient(IngredientRequest ingredientRequest) {
+
+    IngredientEntity foundIngredient = ingredientRepository.findByName(ingredientRequest.getName());
+    if (foundIngredient != null) {
+      int amount = foundIngredient.getQuantity();
+      foundIngredient.setQuantity(amount + ingredientRequest.getQuantity());
+      ingredientRepository.save(foundIngredient);
+    } else {
+      IngredientEntity newIngredient = new IngredientEntity(ingredientRequest.getName(), ingredientRequest.getQuantity());
+      ingredientRepository.save(newIngredient);
     }
   }
 }

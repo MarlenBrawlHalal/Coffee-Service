@@ -21,4 +21,9 @@ public class IngredientEntity {
   private String name;
 
   private int quantity;
+
+  public IngredientEntity(String name, int quantity) {
+    this.name = name;
+    this.quantity = quantity;
+  }
 }
