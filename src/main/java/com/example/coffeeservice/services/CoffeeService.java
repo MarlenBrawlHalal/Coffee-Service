@@ -1,9 +1,6 @@
 package com.example.coffeeservice.services;
 
-import com.example.coffeeservice.dto.DrinkRequest;
-import com.example.coffeeservice.dto.IngredientRequest;
-import com.example.coffeeservice.dto.IngredientResponse;
-import com.example.coffeeservice.dto.RecipeRequest;
+import com.example.coffeeservice.dto.*;
 import com.example.coffeeservice.entities.DrinkEntity;
 import com.example.coffeeservice.entities.IngredientEntity;
 import com.example.coffeeservice.entities.RecipeEntity;
@@ -111,5 +108,19 @@ public class CoffeeService {
     }
 
     return ingredients;
+  }
+
+  public DrinkResponse getMostPopularDrink() {
+
+//    List<DrinkEntity> drinkEntityList = drinkRepository.findAll();
+//    int max_order_count = -1;
+//
+//    for (DrinkEntity drink : drinkEntityList) {
+//      if (drink.getOrderCount() < max_order_count) {
+//        max_order_count = drink.getOrderCount();
+//      }
+//    }
+    DrinkEntity drink = drinkRepository.findTopByOrderByOrderCountDesc();
+    return new DrinkResponse(drink.getName());
   }
 }

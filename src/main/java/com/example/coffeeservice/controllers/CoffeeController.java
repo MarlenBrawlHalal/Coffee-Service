@@ -1,9 +1,6 @@
 package com.example.coffeeservice.controllers;
 
-import com.example.coffeeservice.dto.DrinkRequest;
-import com.example.coffeeservice.dto.IngredientRequest;
-import com.example.coffeeservice.dto.IngredientResponse;
-import com.example.coffeeservice.dto.RecipeRequest;
+import com.example.coffeeservice.dto.*;
 import com.example.coffeeservice.services.CoffeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +28,7 @@ public class CoffeeController {
    return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @PostMapping("/ingredient")
+  @PostMapping("/ingredients")
   public ResponseEntity<Void> addIngredient(@RequestBody IngredientRequest ingredientRequest) {
     coffeeService.addIngredient(ingredientRequest);
     return new ResponseEntity<>(HttpStatus.OK);
@@ -46,5 +43,10 @@ public class CoffeeController {
   @GetMapping("/ingredients")
   public ResponseEntity<List<IngredientResponse>> getIngredients() {
     return new ResponseEntity<>(coffeeService.getIngredients(), HttpStatus.OK);
+  }
+
+  @GetMapping("/popular-drink")
+  public ResponseEntity<DrinkResponse> getMostPopularDrink() {
+    return new ResponseEntity<>(coffeeService.getMostPopularDrink(), HttpStatus.OK);
   }
 }
