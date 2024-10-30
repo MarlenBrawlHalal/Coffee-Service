@@ -2,6 +2,7 @@ package com.example.coffeeservice.services;
 
 import com.example.coffeeservice.dto.DrinkRequest;
 import com.example.coffeeservice.dto.IngredientRequest;
+import com.example.coffeeservice.dto.IngredientResponse;
 import com.example.coffeeservice.dto.RecipeRequest;
 import com.example.coffeeservice.entities.DrinkEntity;
 import com.example.coffeeservice.entities.IngredientEntity;
@@ -16,6 +17,7 @@ import com.example.coffeeservice.repositories.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +35,9 @@ public class CoffeeService {
     if (drink == null) {
       throw new DrinkDoesNotExistException("Drink does not exist");
     }
+
+    drink.setOrderCount(drink.getOrderCount() + 1);
+    drinkRepository.save(drink);
 
     List<RecipeEntity> recipeList = recipeRepository.findByDrink(drink);
     for (RecipeEntity recipe : recipeList) {
@@ -79,6 +84,9 @@ public class CoffeeService {
       throw new DrinkDoesNotExistException("Drink " + recipeRequest.getDrinkName() + " doesn't exist");
     }
 
+    List<RecipeEntity> recipes = recipeRepository.findByDrink(drink);
+    recipeRepository.deleteAll(recipes);
+
     for (Map.Entry<String, Integer> entry : recipeRequest.getIngredients().entrySet()) {
       RecipeEntity newRecipe = new RecipeEntity();
       newRecipe.setDrink(drink);
@@ -91,5 +99,17 @@ public class CoffeeService {
       newRecipe.setAmount(entry.getValue());
       recipeRepository.save(newRecipe);
     }
+  }
+
+  public List<IngredientResponse> getIngredients() {
+
+    List<IngredientResponse> ingredients = new ArrayList<>();
+    List<IngredientEntity> ingredientEntities = ingredientRepository.findAll();
+
+    for (IngredientEntity ingredient : ingredientEntities) {
+        ingredients.add(new IngredientResponse(ingredient.getName(), ingredient.getQuantity()));
+    }
+
+    return ingredients;
   }
 }

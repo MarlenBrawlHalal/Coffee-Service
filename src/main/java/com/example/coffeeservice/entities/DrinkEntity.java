@@ -20,6 +20,8 @@ public class DrinkEntity {
 
   private String name;
 
+  private int orderCount;
+
   public DrinkEntity(String name) {
     this.name = name;
   }
