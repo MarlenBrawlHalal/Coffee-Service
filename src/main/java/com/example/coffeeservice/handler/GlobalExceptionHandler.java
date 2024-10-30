@@ -47,5 +47,19 @@ public class GlobalExceptionHandler {
                 .build()
         );
   }
+
+  @ExceptionHandler(CoffeeServiceIsNotAvailableException.class)
+  public ResponseEntity<ExceptionResponse> handleException(CoffeeServiceIsNotAvailableException exp) {
+    return ResponseEntity
+        .status(HttpStatus.SERVICE_UNAVAILABLE)
+        .body(
+            ExceptionResponse.builder()
+                .errorCode(HttpStatus.SERVICE_UNAVAILABLE.value())
+                .errorDescription("Service is unavailable")
+                .error(exp.getMessage())
+                .build()
+        );
+  }
+
 }
 

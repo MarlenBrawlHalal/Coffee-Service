@@ -4,29 +4,52 @@ import com.example.coffeeservice.dto.*;
 import com.example.coffeeservice.entities.DrinkEntity;
 import com.example.coffeeservice.entities.IngredientEntity;
 import com.example.coffeeservice.entities.RecipeEntity;
-import com.example.coffeeservice.handler.DrinkAlreadyExistsException;
-import com.example.coffeeservice.handler.DrinkDoesNotExistException;
-import com.example.coffeeservice.handler.IngredientDoesNotExistException;
-import com.example.coffeeservice.handler.OutOfIngredientException;
+import com.example.coffeeservice.handler.*;
+import com.example.coffeeservice.holidayService.HolidayService;
 import com.example.coffeeservice.repositories.DrinkRepository;
 import com.example.coffeeservice.repositories.IngredientRepository;
 import com.example.coffeeservice.repositories.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class CoffeeService {
 
+  private final HolidayService holidayService;
+
   private final IngredientRepository ingredientRepository;
   private final DrinkRepository drinkRepository;
   private final RecipeRepository recipeRepository;
 
+  public boolean isWithinOperatingHours() {
+    LocalTime now = LocalTime.now();
+
+    if (now.isBefore(LocalTime.of(8, 0)) || now.isAfter(LocalTime.of(17, 0))) {
+      return false;
+    }
+
+    LocalDate today = LocalDate.now();
+    if (today.getDayOfWeek().getValue() >- 6) {
+      return false;
+    }
+
+    Set<LocalDate> holidays = holidayService.getHolidays(today.getYear(), "KZ");
+    return !holidays.contains(today);
+  }
+
   public void prepareDrink(String drinkName) {
+    if (!isWithinOperatingHours()) {
+      throw new CoffeeServiceIsNotAvailableException("Coffee service is not available at this time.");
+    }
+
     DrinkEntity drink = drinkRepository.findByName(drinkName);
 
     if (drink == null) {
@@ -111,15 +134,6 @@ public class CoffeeService {
   }
 
   public DrinkResponse getMostPopularDrink() {
-
-//    List<DrinkEntity> drinkEntityList = drinkRepository.findAll();
-//    int max_order_count = -1;
-//
-//    for (DrinkEntity drink : drinkEntityList) {
-//      if (drink.getOrderCount() < max_order_count) {
-//        max_order_count = drink.getOrderCount();
-//      }
-//    }
     DrinkEntity drink = drinkRepository.findTopByOrderByOrderCountDesc();
     return new DrinkResponse(drink.getName());
   }
