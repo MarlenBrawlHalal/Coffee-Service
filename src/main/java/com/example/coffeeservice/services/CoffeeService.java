@@ -30,8 +30,8 @@ public class CoffeeService {
   private final RecipeRepository recipeRepository;
 
   public boolean isWithinOperatingHours() {
-    LocalTime now = LocalTime.now();
 
+    LocalTime now = LocalTime.now();
     if (now.isBefore(LocalTime.of(8, 0)) || now.isAfter(LocalTime.of(17, 0))) {
       return false;
     }

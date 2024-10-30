@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
         .body(
             ExceptionResponse.builder()
                 .errorCode(HttpStatus.SERVICE_UNAVAILABLE.value())
-                .errorDescription("Service is unavailable")
+                .errorDescription("Service is not unavailable")
                 .error(exp.getMessage())
                 .build()
         );
