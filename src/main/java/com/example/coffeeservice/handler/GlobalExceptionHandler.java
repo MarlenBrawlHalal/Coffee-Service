@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
   @ExceptionHandler(DrinkDoesNotExistException.class)
   public ResponseEntity<ExceptionResponse> handleException(DrinkDoesNotExistException exp) {
     return ResponseEntity
@@ -16,6 +17,19 @@ public class GlobalExceptionHandler {
             ExceptionResponse.builder()
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .errorDescription("Bad request")
+                .error(exp.getMessage())
+                .build()
+        );
+  }
+
+  @ExceptionHandler(DrinkAlreadyExistsException.class)
+  public ResponseEntity<ExceptionResponse> handleException(DrinkAlreadyExistsException exp) {
+    return ResponseEntity
+        .status(HttpStatus.CONFLICT)
+        .body(
+            ExceptionResponse.builder()
+                .errorCode(HttpStatus.CONFLICT.value())
+                .errorDescription("Drink already exists")
                 .error(exp.getMessage())
                 .build()
         );
@@ -34,3 +48,4 @@ public class GlobalExceptionHandler {
         );
   }
 }
+

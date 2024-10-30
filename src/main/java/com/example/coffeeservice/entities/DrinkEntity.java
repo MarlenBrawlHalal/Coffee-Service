@@ -19,4 +19,8 @@ public class DrinkEntity {
   private int id;
 
   private String name;
+
+  public DrinkEntity(String name) {
+    this.name = name;
+  }
 }

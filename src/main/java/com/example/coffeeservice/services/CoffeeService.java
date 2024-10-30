@@ -1,10 +1,14 @@
 package com.example.coffeeservice.services;
 
+import com.example.coffeeservice.dto.DrinkRequest;
 import com.example.coffeeservice.dto.IngredientRequest;
+import com.example.coffeeservice.dto.RecipeRequest;
 import com.example.coffeeservice.entities.DrinkEntity;
 import com.example.coffeeservice.entities.IngredientEntity;
 import com.example.coffeeservice.entities.RecipeEntity;
+import com.example.coffeeservice.handler.DrinkAlreadyExistsException;
 import com.example.coffeeservice.handler.DrinkDoesNotExistException;
+import com.example.coffeeservice.handler.IngredientDoesNotExistException;
 import com.example.coffeeservice.handler.OutOfIngredientException;
 import com.example.coffeeservice.repositories.DrinkRepository;
 import com.example.coffeeservice.repositories.IngredientRepository;
@@ -13,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +48,17 @@ public class CoffeeService {
     }
   }
 
+  public void addDrink(DrinkRequest drinkRequest) {
+    DrinkEntity drink = drinkRepository.findByName(drinkRequest.getName());
+
+    if (drink != null) {
+      throw new DrinkAlreadyExistsException(drink.getName() + " already exists");
+    }
+
+    DrinkEntity newDrink = new DrinkEntity(drinkRequest.getName());
+    drinkRepository.save(newDrink);
+  }
+
   public void addIngredient(IngredientRequest ingredientRequest) {
 
     IngredientEntity foundIngredient = ingredientRepository.findByName(ingredientRequest.getName());
@@ -53,6 +69,27 @@ public class CoffeeService {
     } else {
       IngredientEntity newIngredient = new IngredientEntity(ingredientRequest.getName(), ingredientRequest.getQuantity());
       ingredientRepository.save(newIngredient);
+    }
+  }
+
+  public void addRecipe(RecipeRequest recipeRequest) {
+    DrinkEntity drink = drinkRepository.findByName(recipeRequest.getDrinkName());
+
+    if (drink == null) {
+      throw new DrinkDoesNotExistException("Drink " + recipeRequest.getDrinkName() + " doesn't exist");
+    }
+
+    for (Map.Entry<String, Integer> entry : recipeRequest.getIngredients().entrySet()) {
+      RecipeEntity newRecipe = new RecipeEntity();
+      newRecipe.setDrink(drink);
+      IngredientEntity ingredient = ingredientRepository.findByName(entry.getKey());
+
+      if (ingredient == null) {
+        throw new IngredientDoesNotExistException(entry.getKey() + " doesn't exist");
+      }
+      newRecipe.setIngredient(ingredient);
+      newRecipe.setAmount(entry.getValue());
+      recipeRepository.save(newRecipe);
     }
   }
 }
