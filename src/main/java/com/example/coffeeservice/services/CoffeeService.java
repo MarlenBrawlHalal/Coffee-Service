@@ -37,7 +37,7 @@ public class CoffeeService {
     }
 
     LocalDate today = LocalDate.now();
-    if (today.getDayOfWeek().getValue() >- 6) {
+    if (today.getDayOfWeek().getValue() >= 6) {
       return false;
     }
 
